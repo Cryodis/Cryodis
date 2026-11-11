@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GPX Lauf-Analyse</title>
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="brand">GPX Lauf-Analyse</h1>
+    <nav class="view-switch" aria-label="Ansicht">
+      <button id="btn-view-single" type="button" class="seg-btn is-active" aria-pressed="true">Einzelner Lauf</button>
+      <button id="btn-view-compare" type="button" class="seg-btn" aria-pressed="false">Vergleich</button>
+    </nav>
+    <div class="actions">
+      <label class="btn btn-primary" for="file-input">+ GPX laden</label>
+      <input id="file-input" type="file" multiple accept=".gpx" hidden>
+      <button id="btn-export" type="button" class="btn">Export</button>
+      <button id="btn-import" type="button" class="btn">Import</button>
+      <input id="import-input" type="file" accept=".json" hidden>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Meine Läufe</h2>
+      <ul id="run-list"></ul>
+    </aside>
+
+    <main class="content">
+      <div id="storage-banner" class="banner" hidden>Speichern im Browser ist hier nicht möglich. Läufe bleiben nur bis zum Schließen erhalten – bitte über „Export“ sichern.</div>
+      <div id="empty-state" class="empty" hidden>Noch keine Läufe. GPX-Dateien über „+ GPX laden“ auswählen oder hierher ziehen.</div>
+
+      <section id="view-single" hidden>
+        <div id="summary" class="summary"></div>
+        <div class="single-grid">
+          <div class="card map-card">
+            <div id="map"></div>
+            <div id="map-offline-note" class="map-note" hidden>Offline – Karte ohne Hintergrund</div>
+          </div>
+          <div class="card table-card">
+            <table id="segment-table" class="data-table"></table>
+          </div>
+          <div class="card chart-card">
+            <canvas id="segment-chart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-compare" hidden></section>
+    </main>
+  </div>
+
+  <div id="toasts" aria-live="polite"></div>
+  <div id="drop-overlay" hidden>GPX-Dateien hier ablegen</div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="vendor/chart.js/chart.umd.js"></script>
+  <script src="js/core/errors.js"></script>
+  <script src="js/core/format.js"></script>
+  <script src="js/core/geo.js"></script>
+  <script src="js/core/gpx-parser.js"></script>
+  <script src="js/core/analysis.js"></script>
+  <script src="js/core/color-scale.js"></script>
+  <script src="js/core/compare.js"></script>
+  <script src="js/core/backup.js"></script>
+  <script src="js/core/state.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/ui/toast.js"></script>
+  <script src="js/ui/run-list.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
