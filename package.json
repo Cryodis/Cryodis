@@ -1,0 +1,15 @@
+{
+  "name": "gpx-lauf-analyse",
+  "private": true,
+  "description": "Lokale Single-Page-Anwendung zur Analyse von GPX-Läufen",
+  "scripts": {
+    "test": "node --test \"tests/core/*.test.js\"",
+    "test:e2e": "node --test --test-concurrency=1 \"tests/e2e/*.test.js\"",
+    "vendor": "node scripts/copy-vendor.js"
+  },
+  "devDependencies": {
+    "@xmldom/xmldom": "0.9.8",
+    "chart.js": "4.4.7",
+    "leaflet": "1.9.4"
+  }
+}
