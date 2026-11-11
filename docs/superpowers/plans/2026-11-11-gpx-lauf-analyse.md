@@ -210,7 +210,7 @@ Expected: `images leaflet.css leaflet.js` und `chart.umd.js`
 **Interfaces:**
 - Consumes: `Analysis` aus Task 3
 - Produces:
-  - `GpxApp.colorScale.colorForPace(paceSPerKm, fastestPace, slowestPace) -> '#rrggbb'` – `slowestPace → '#1e3a8a'`, `fastestPace → '#ff4d4d'`, Werte außerhalb werden geklemmt, `fastestPace === slowestPace → '#8f4470'` (Mittelwert, gerundet).
+  - `GpxApp.colorScale.colorForPace(paceSPerKm, fastestPace, slowestPace) -> '#rrggbb'` – `slowestPace → '#1e3a8a'`, `fastestPace → '#ff4d4d'`, Werte außerhalb werden geklemmt, `fastestPace === slowestPace → '#8f446c'` (kanalweiser Mittelwert, gerundet).
   - `GpxApp.colorScale.SLOW_COLOR`, `FAST_COLOR`, `SERIES_COLORS: string[]` (8 gut unterscheidbare Farben, keine reinen Blau-/Rottöne der Skala) und `seriesColor(i) -> string` (zyklisch).
   - `GpxApp.compare.alignSegments(runs: {id, analysis}[]) -> { rows: [{ index, startM, endM, paces: { [id]: number|null }, fastestId: string|null }] }` – Zeilenzahl = längster Lauf; `fastestId` nur aus nicht-`partial` Werten, bei < 2 Werten `null`.
   - `GpxApp.compare.timeGaps(reference: Analysis, other: Analysis) -> [{ boundary: number, distanceM: number, gapS: number }]` – für `k = 1 … min(len)-1` der `boundaryTimesS`; `gapS = other.boundaryTimesS[k] - reference.boundaryTimesS[k]`; `distanceM = reference.segments[k-1].endM`.
