@@ -77,6 +77,10 @@
     }
     G.app.importFiles = importFiles;
 
+    // Layout zuerst abonnieren, damit Container sichtbar sind, bevor Ansichten rendern
+    state.subscribe(renderLayout);
+    renderLayout();
+
     // Ansichten
     G.runList.mount($('run-list'), state, { onDelete: deleteRun });
     for (const mod of ['summary', 'mapView', 'segmentChart', 'segmentTable']) {
@@ -96,9 +100,6 @@
         $(id).setAttribute('aria-pressed', String(s.view === view));
       }
     }
-    state.subscribe(renderLayout);
-    renderLayout();
-
     $('btn-view-single').addEventListener('click', () => state.set({ view: 'single' }));
     $('btn-view-compare').addEventListener('click', () => state.set({ view: 'compare' }));
     $('file-input').addEventListener('change', async (e) => {

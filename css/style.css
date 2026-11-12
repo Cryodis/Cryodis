@@ -90,3 +90,34 @@ button:focus-visible, .btn:focus-within, input:focus-visible, select:focus-visib
   .content { padding: 12px; }
   .actions { margin-left: 0; }
 }
+
+/* Einzelansicht */
+#view-single { display: flex; flex-direction: column; gap: 16px; }
+.run-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; box-shadow: var(--shadow); }
+.kpi-label { font-size: 12px; color: var(--muted); }
+.kpi-value { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.kpi-sub { font-size: 12px; color: var(--muted); }
+.legend { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+.legend-bar { flex: 0 1 260px; height: 10px; border-radius: 5px; }
+.single-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); grid-template-rows: 420px 280px; gap: 16px; }
+.map-card { position: relative; overflow: hidden; }
+#map { position: absolute; inset: 0; }
+#map.map-offline { background: #eef1f4; }
+#map path.seg { cursor: pointer; }
+.map-note { position: absolute; left: 10px; bottom: 10px; z-index: 1000; background: rgba(255, 255, 255, 0.92); padding: 4px 10px; border-radius: 6px; font-size: 12px; border: 1px solid var(--border); }
+.table-card { overflow-y: auto; }
+.chart-card { grid-column: 1 / -1; padding: 12px; position: relative; }
+.chart-card canvas { width: 100% !important; height: 100% !important; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+.data-table th { position: sticky; top: 0; background: var(--surface-2); text-align: left; font-weight: 600; padding: 8px 10px; font-size: 12px; color: var(--muted); z-index: 1; }
+.data-table td { padding: 6px 10px; border-top: 1px solid var(--border); }
+.data-table tbody tr { cursor: pointer; }
+.data-table tbody tr:hover { background: var(--surface-2); }
+.data-table tr.is-selected td { background: #fff1c2; font-weight: 600; }
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; background: var(--seg-color); vertical-align: -1px; }
+
+@media (max-width: 900px) {
+  .single-grid { grid-template-columns: 1fr; grid-template-rows: 340px 320px 260px; }
+}

@@ -21,7 +21,7 @@
   }
 
   function formatDistance(m) {
-    if (m < 1000) return Math.round(m) + ' m';
+    if (Math.round(m) < 1000) return Math.round(m) + ' m';
     return (m / 1000).toFixed(2).replace('.', ',') + ' km';
   }
 

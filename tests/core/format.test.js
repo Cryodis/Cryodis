@@ -23,6 +23,8 @@ test('formatDistance', () => {
   assert.equal(f.formatDistance(5023), '5,02 km');
   assert.equal(f.formatDistance(1000), '1,00 km');
   assert.equal(f.formatDistance(850), '850 m');
+  assert.equal(f.formatDistance(999.996), '1,00 km');
+  assert.equal(f.formatDistance(999.4), '999 m');
 });
 
 test('formatDate liefert TT.MM.JJJJ', () => {
