@@ -16,7 +16,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; }
+html, body { margin: 0; }
 body { background: var(--bg); display: flex; flex-direction: column; min-height: 100vh; }
 [hidden] { display: none !important; }
 

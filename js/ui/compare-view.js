@@ -99,7 +99,7 @@
         onClick: onChartClick('lines'),
         scales: {
           y: { reverse: true, title: { display: true, text: 'Tempo /km' }, ticks: { callback: (v) => f.formatPace(v) } },
-          x: { ticks: { autoSkip: true, maxRotation: 0 } },
+          x: { ticks: { autoSkip: true, autoSkipPadding: 24, maxRotation: 0 } },
         },
         plugins: {
           legend: { display: false },
@@ -129,7 +129,7 @@
         onClick: onChartClick('gaps'),
         scales: {
           y: { title: { display: true, text: 'Rückstand (+) / Vorsprung (−)' }, ticks: { callback: (v) => f.formatGap(v) } },
-          x: { ticks: { autoSkip: true, maxRotation: 0 } },
+          x: { ticks: { autoSkip: true, autoSkipPadding: 24, maxRotation: 0 } },
         },
         plugins: {
           legend: { display: false },

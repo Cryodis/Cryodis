@@ -23,7 +23,7 @@
             },
           },
           scales: {
-            x: { ticks: { autoSkip: true, maxRotation: 0 }, grid: { display: false } },
+            x: { ticks: { autoSkip: true, autoSkipPadding: 24, maxRotation: 0 }, grid: { display: false } },
             y: { title: { display: true, text: 'km/h' }, beginAtZero: true },
           },
           onClick: (evt) => {

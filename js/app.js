@@ -128,6 +128,62 @@
       if (files.length) importFiles(files);
     });
 
+    // Export und Import
+    $('btn-export').addEventListener('click', () => {
+      const raws = Object.values(state.get().runs).map((r) => r.raw);
+      if (!raws.length) {
+        G.toast.show('Keine Läufe zum Exportieren.');
+        return;
+      }
+      const now = Date.now();
+      const blob = new Blob([G.backup.exportJson(raws, now)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = G.backup.exportFileName(now);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+
+    $('btn-import').addEventListener('click', () => $('import-input').click());
+    $('import-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      e.target.value = '';
+      if (!file) return;
+      let imported;
+      try {
+        imported = G.backup.parseImport(await file.text());
+      } catch (err) {
+        G.toast.show('Die Sicherungsdatei ist ungültig. Es wurde nichts geändert.', 'error');
+        return;
+      }
+      const known = Object.values(state.get().runs).map((r) => r.raw);
+      const added = {};
+      let skipped = 0;
+      for (const raw of imported) {
+        if (G.backup.isDuplicate(raw, known)) {
+          skipped++;
+          continue;
+        }
+        try {
+          added[raw.id] = analyze(raw);
+        } catch (err) {
+          skipped++;
+          continue;
+        }
+        await storage.put(raw);
+        known.push(raw);
+      }
+      const n = Object.keys(added).length;
+      G.toast.show(n + ' Läufe importiert, ' + skipped + ' bereits vorhanden.');
+      if (n) {
+        const s = state.get();
+        state.set({ runs: { ...s.runs, ...added }, compareRunIds: s.compareRunIds.concat(Object.keys(added)) });
+      }
+    });
+
     document.body.dataset.ready = 'true';
   }
 
