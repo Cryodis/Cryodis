@@ -101,3 +101,27 @@ test('Auswahl wirkt über Tabs hinweg; Hinweis bei weniger als zwei Läufen', as
   assert.deepEqual(errors, []);
   await context.close();
 });
+
+test('Laufnamen werden als Text angezeigt, nicht als HTML', async () => {
+  const { buildGpx, straightRun, DEFAULT_START } = require('../helpers/gpx-builder.js');
+  const { writeFile } = require('./helpers.js');
+  const ctx = await launch();
+  const { page, context, errors } = ctx;
+  const evil = writeFile(
+    'evil.gpx',
+    buildGpx({ name: 'Lauf &lt;img src=x onerror="window.__xss=1"&gt;', points: straightRun({ distanceM: 1000, paceSPerKm: 300 }) })
+  );
+  const ok = writeFile('ok.gpx', buildGpx({ name: 'Normal', points: straightRun({ distanceM: 1000, paceSPerKm: 310, startTime: DEFAULT_START + 86400000 }) }));
+  await loadFiles(page, [evil, ok]);
+  await page.waitForFunction(() => document.querySelectorAll('#run-list li').length === 2);
+  await page.click('#btn-view-compare');
+  await page.click('button[data-tab="table"]');
+  await page.click('button[data-tab="gaps"]');
+  assert.equal(await page.$$eval('#view-compare img', (i) => i.length), 0);
+  assert.equal(await page.evaluate(() => window.__xss), undefined);
+  assert.match(await page.textContent('#compare-legend'), /Lauf <img src=x/);
+  const optionTexts = await page.$$eval('#reference-select option', (o) => o.map((x) => x.textContent));
+  assert.ok(optionTexts.some((t) => t.includes('Lauf <img')));
+  assert.deepEqual(errors, []);
+  await context.close();
+});

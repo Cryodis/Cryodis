@@ -46,3 +46,11 @@ test('defaultReferenceId: bestes Durchschnittstempo (kürzere Läufe gewinnen ni
   assert.equal(cmp.defaultReferenceId([fast, fast2]), 'f2');
   assert.equal(cmp.defaultReferenceId([]), null);
 });
+
+test('timeGaps: kein Scheinsprung bei unterschiedlich langen Reststücken', () => {
+  const r1 = analyzeRun(straightRun({ distanceM: 5020, paceSPerKm: 300 }));
+  const r2 = analyzeRun(straightRun({ distanceM: 5060, paceSPerKm: 300 }));
+  const gaps = cmp.timeGaps(r1, r2);
+  assert.equal(gaps.length, 50);
+  gaps.forEach((g) => near(g.gapS, 0, 0.5));
+});

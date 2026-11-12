@@ -32,6 +32,8 @@
     const len = Math.min(reference.boundaryTimesS.length, other.boundaryTimesS.length);
     const gaps = [];
     for (let k = 1; k < len; k++) {
+      // Nur echte 100-m-Grenzen: das Ende eines kurzen Reststücks liegt bei beiden Läufen woanders.
+      if (reference.segments[k - 1].partial || other.segments[k - 1].partial) continue;
       gaps.push({
         boundary: k,
         distanceM: reference.segments[k - 1].endM,

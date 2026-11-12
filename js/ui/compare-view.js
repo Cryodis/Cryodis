@@ -8,6 +8,9 @@
     ['development', 'Entwicklung'],
   ];
   const NEEDS_TWO = ['lines', 'gaps', 'table'];
+  const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  /** Laufnamen und IDs stammen aus Dateien – vor dem Einfügen als HTML maskieren. */
+  const esc = (v) => String(v).replace(/[&<>"']/g, (c) => ESC[c]);
 
   function mount(el, state) {
     const f = G.format;
@@ -122,7 +125,7 @@
     function renderGaps(runs) {
       const s = state.get();
       const select = $('#reference-select');
-      select.innerHTML = runs.map((r) => '<option value="' + r.id + '">' + r.label + '</option>').join('');
+      select.innerHTML = runs.map((r) => '<option value="' + esc(r.id) + '">' + esc(r.label) + '</option>').join('');
       select.value = s.referenceRunId || '';
       const ref = runs.find((r) => r.id === s.referenceRunId);
       const chart = lineChart('gaps', $('#compare-gaps canvas'), {
@@ -165,7 +168,7 @@
     function renderTable(runs, rows) {
       const head =
         '<thead><tr><th>Abschnitt</th>' +
-        runs.map((r) => '<th><span class="dot" style="background:' + r.color + '"></span>' + r.label + '</th>').join('') +
+        runs.map((r) => '<th><span class="dot" style="background:' + r.color + '"></span>' + esc(r.label) + '</th>').join('') +
         '</tr></thead>';
       const body = rows
         .map(
@@ -219,7 +222,7 @@
 
     function renderLegend(runs) {
       $('#compare-legend').innerHTML = runs
-        .map((r) => '<span class="series-item"><span class="dot" style="background:' + r.color + '"></span>' + r.label + '</span>')
+        .map((r) => '<span class="series-item"><span class="dot" style="background:' + r.color + '"></span>' + esc(r.label) + '</span>')
         .join('');
     }
 

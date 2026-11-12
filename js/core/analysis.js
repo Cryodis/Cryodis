@@ -12,20 +12,40 @@
   const PAUSE_SPEED_KMH = 1;
   const PAUSE_MIN_DURATION_S = 10;
   const OUTLIER_SPEED_KMH = 30;
+  /** Stillstand trotz GPS-Zittern: alle Punkte bleiben so nah am ersten Punkt der Phase. */
+  const PAUSE_RADIUS_M = 5;
   /** Toleranz gegen Rundungsfehler der Distanzsumme (1 cm). */
   const EPS_M = 0.01;
+
+  /** Nach so vielen verworfenen Punkten in Folge gilt der Ankerpunkt selbst als fragwürdig. */
+  const OUTLIER_RESET_COUNT = 5;
 
   function removeOutliers(points) {
     if (points.length === 0) return [];
     const out = [points[0]];
+    let firstRejected = -1;
+    let rejected = 0;
     for (let i = 1; i < points.length; i++) {
       const last = out[out.length - 1];
       const p = points[i];
       const dt = (p.time - last.time) / 1000;
       if (dt <= 0) continue;
       const kmh = (geo.haversine(last.lat, last.lon, p.lat, p.lon) / dt) * 3.6;
-      if (kmh > OUTLIER_SPEED_KMH) continue;
-      out.push(p);
+      if (kmh <= OUTLIER_SPEED_KMH) {
+        out.push(p);
+        rejected = 0;
+        continue;
+      }
+      if (rejected === 0) firstRejected = i;
+      rejected++;
+      if (rejected >= OUTLIER_RESET_COUNT) {
+        // Viele Punkte passen nicht zum Anker: falscher Startpunkt oder GPS-Versatz.
+        // Ein falscher erster Punkt wird verworfen, sonst wird ab dem ersten verworfenen Punkt neu verankert.
+        if (out.length === 1) out.pop();
+        out.push(points[firstRejected]);
+        i = firstRejected;
+        rejected = 0;
+      }
     }
     return out;
   }
@@ -54,6 +74,18 @@
         for (let k = i; k < j; k++) isPause[k] = true;
       }
       i = j;
+    }
+    // Zweiter Durchgang: Stillstand mit GPS-Zittern (Einzelpaare wirken dann „schnell“).
+    i = 0;
+    while (i < n) {
+      let j = i;
+      while (j < n && geo.haversine(points[i].lat, points[i].lon, points[j + 1].lat, points[j + 1].lon) <= PAUSE_RADIUS_M) j++;
+      if (j > i && (points[j].time - points[i].time) / 1000 >= PAUSE_MIN_DURATION_S) {
+        for (let k = i; k < j; k++) isPause[k] = true;
+        i = j;
+      } else {
+        i++;
+      }
     }
     return isPause;
   }
@@ -156,6 +188,7 @@
     PAUSE_SPEED_KMH,
     PAUSE_MIN_DURATION_S,
     OUTLIER_SPEED_KMH,
+    PAUSE_RADIUS_M,
     removeOutliers,
     analyzeRun,
   };

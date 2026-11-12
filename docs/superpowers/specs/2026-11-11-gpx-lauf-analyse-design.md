@@ -80,8 +80,8 @@ mehrere Läufe derselben Strecke, um Trainingsfortschritte sichtbar zu machen.
   Serienfarbe (unabhängig von der Tempo-Skala), mit Legende.
 - Tabs:
   1. **Tempo-Linien**: x = Distanz (Abschnitte), y = Tempo; eine Linie je Lauf.
-  2. **Vorsprung/Rückstand**: Auswahl des Referenzlaufs (Standard: Lauf mit der
-     kürzesten reinen Laufzeit); x = Distanz, y = Zeitdifferenz in Sekunden
+  2. **Vorsprung/Rückstand**: Auswahl des Referenzlaufs (Standard: Lauf mit dem
+     besten Durchschnittstempo, damit ein abgebrochener kürzerer Lauf nicht Referenz wird); x = Distanz, y = Zeitdifferenz in Sekunden
      gegenüber der Referenz an jeder 100-m-Grenze; Nulllinie hervorgehoben.
   3. **Tabelle**: Zeilen = Abschnitte, Spalten = Läufe, Werte = Tempo;
      schnellster Wert je Zeile hervorgehoben.
@@ -107,6 +107,8 @@ Alle Schwellwerte sind benannte Konstanten in `js/core/analysis.js`:
 | `PAUSE_SPEED_KMH` | 1 |
 | `PAUSE_MIN_DURATION_S` | 10 |
 | `OUTLIER_SPEED_KMH` | 30 |
+| `PAUSE_RADIUS_M` | 5 |
+| `OUTLIER_RESET_COUNT` | 5 |
 
 ### 3.1 GPX einlesen
 
@@ -120,7 +122,9 @@ Alle Schwellwerte sind benannte Konstanten in `js/core/analysis.js`:
 
 - Distanz zwischen Punkten per Haversine-Formel (Erdradius 6 371 000 m).
 - Ausreißer: Ein Punkt, der vom letzten akzeptierten Punkt aus nur mit mehr als
-  `OUTLIER_SPEED_KMH` erreichbar wäre, wird verworfen.
+  `OUTLIER_SPEED_KMH` erreichbar wäre, wird verworfen. Werden `OUTLIER_RESET_COUNT`
+  Punkte in Folge verworfen, gilt der Anker als fragwürdig: Ist er der erste Punkt,
+  wird er verworfen, sonst wird ab dem ersten verworfenen Punkt neu verankert.
 
 ### 3.3 Pausen
 
@@ -129,6 +133,9 @@ Alle Schwellwerte sind benannte Konstanten in `js/core/analysis.js`:
 - Dauert eine Langsam-Phase mindestens `PAUSE_MIN_DURATION_S`, ist sie eine Pause:
   ihre Zeit **und** ihre Distanz zählen nicht zur Laufzeit bzw. Laufstrecke.
 - Kürzere Langsam-Phasen zählen normal mit.
+- Zusätzlich gilt als Pause: alle Punkte bleiben mindestens `PAUSE_MIN_DURATION_S`
+  lang innerhalb von `PAUSE_RADIUS_M` um den ersten Punkt (Stillstand mit GPS-Zittern,
+  bei dem einzelne Punktpaare über 1 km/h liegen).
 - Je Pause gespeichert: Position (erster Punkt der Phase), Dauer, Distanz vom Start.
 
 ### 3.4 100-m-Abschnitte
@@ -161,8 +168,8 @@ Alle Schwellwerte sind benannte Konstanten in `js/core/analysis.js`:
 - Abgleich über den Abschnittsindex (Distanz vom Start). Fehlende Abschnitte
   eines kürzeren Laufs bleiben leer.
 - Vorsprung/Rückstand an Grenze k: kumulierte Laufzeit(Lauf, k) −
-  kumulierte Laufzeit(Referenz, k). Positiv = Rückstand. Nur für Grenzen, die
-  beide Läufe erreichen.
+  kumulierte Laufzeit(Referenz, k). Positiv = Rückstand. Nur für volle
+  100-m-Grenzen, die beide Läufe erreichen (Ende eines Reststücks zählt nicht).
 - Entwicklung: je Lauf (Datum, Durchschnittstempo, Laufzeit), nach Datum sortiert.
 
 ### 3.8 Duplikate

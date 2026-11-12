@@ -122,3 +122,38 @@ test('20 000 Punkte werden in unter 300 ms analysiert', () => {
   assert.equal(r.segments.length, 200);
   assert.ok(ms < 300, `${ms} ms`);
 });
+
+/** Stillstand mit GPS-Zittern (±maxM) im 1-s-Takt an Position lat/lon. */
+function jitteredStop(lat, lon, startTime, seconds, maxM) {
+  const offs = [0.9, -0.4, 0.7, -1, 0.2, -0.8, 1, -0.3, 0.5, -0.6];
+  const pts = [];
+  for (let s = 1; s <= seconds; s++) {
+    const o = offs[s % offs.length] * maxM;
+    const o2 = offs[(s * 3) % offs.length] * maxM;
+    pts.push({ lat: lat + o / M_PER_DEG_LAT, lon: lon + o2 / (M_PER_DEG_LAT * Math.cos((lat * Math.PI) / 180)), time: startTime + s * 1000 });
+  }
+  return pts;
+}
+
+test('Pause mit GPS-Zittern bei 1-s-Aufzeichnung wird erkannt (Start und unterwegs)', () => {
+  const first = straightRun({ distanceM: 1000, paceSPerKm: 300, stepM: 10 / 3 });
+  const stopStart = jitteredStop(48, 11, DEFAULT_START - 61000, 60, 1).map((p) => ({ ...p }));
+  const mid = first[first.length - 1];
+  const stopMid = jitteredStop(mid.lat, mid.lon, mid.time, 40, 1);
+  const second = straightRun({ distanceM: 1000, paceSPerKm: 300, stepM: 10 / 3, startLat: mid.lat, startTime: mid.time + 41000 });
+  const pts = stopStart.concat(first, stopMid, second);
+  const r = a.analyzeRun(pts);
+  assert.equal(r.pauses.length, 2);
+  near(r.segments[0].paceSPerKm, 300, 10, 'erster Abschnitt');
+  near(r.segments[10].paceSPerKm, 300, 10, 'Abschnitt nach Ampel');
+  near(r.distanceM, 2000, 10, 'Distanz');
+});
+
+test('falscher erster GPS-Punkt wird verworfen statt den Start zu verfälschen', () => {
+  const pts = straightRun({ distanceM: 2000, paceSPerKm: 300 });
+  const bad = { lat: 48 + 800 / M_PER_DEG_LAT, lon: 11 + 800 / (M_PER_DEG_LAT * Math.cos((48 * Math.PI) / 180)), time: pts[0].time - 1000 };
+  const r = a.analyzeRun([bad].concat(pts));
+  near(r.distanceM, 2000, 1);
+  near(r.segments[0].paceSPerKm, 300, 1);
+  near(r.fastestPace, 300, 1);
+});
