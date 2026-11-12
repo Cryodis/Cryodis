@@ -50,7 +50,7 @@
   function defaultReferenceId(runs) {
     let best = null;
     for (const r of runs) {
-      if (!best || r.analysis.movingTimeS < best.analysis.movingTimeS) best = r;
+      if (!best || r.analysis.avgPaceSPerKm < best.analysis.avgPaceSPerKm) best = r;
     }
     return best ? best.id : null;
   }

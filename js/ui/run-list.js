@@ -51,8 +51,16 @@
         el.appendChild(li);
       }
     }
+    function updateChecks() {
+      const ids = state.get().compareRunIds;
+      el.querySelectorAll('li[data-run-id]').forEach((li) => {
+        li.querySelector('.run-compare').checked = ids.includes(li.dataset.runId);
+      });
+    }
+
     state.subscribe((s, keys) => {
-      if (keys.some((k) => ['runs', 'currentRunId', 'compareRunIds', 'view'].includes(k))) render();
+      if (keys.some((k) => ['runs', 'currentRunId', 'view'].includes(k))) render();
+      else if (keys.includes('compareRunIds')) updateChecks(); // in place, damit der Fokus erhalten bleibt
     });
     render();
   }

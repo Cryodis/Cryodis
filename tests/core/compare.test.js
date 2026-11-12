@@ -40,8 +40,8 @@ test('development: nach Datum sortiert', () => {
   assert.equal(dev[1].date, 2000);
 });
 
-test('defaultReferenceId: kürzeste Laufzeit', () => {
-  assert.equal(cmp.defaultReferenceId([slow, fast]), 'slow'); // 297 s < 300 s
+test('defaultReferenceId: bestes Durchschnittstempo (kürzere Läufe gewinnen nicht automatisch)', () => {
+  assert.equal(cmp.defaultReferenceId([slow, fast]), 'fast'); // slow: 297 s, aber 5:30 /km
   const fast2 = { id: 'f2', analysis: analyzeRun(straightRun({ distanceM: 1000, paceSPerKm: 280 })) };
   assert.equal(cmp.defaultReferenceId([fast, fast2]), 'f2');
   assert.equal(cmp.defaultReferenceId([]), null);
